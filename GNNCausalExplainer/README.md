@@ -1,17 +1,22 @@
-README.md
-Overview
-This repository contains Python scripts related to the analysis of causal graphs, represented by the CausalGraph class. This class is a tool for representing and manipulating causal graphs, which are data structures used to model causal relationships between different variables.
+# Causal Graph Analysis
 
-Main functionalities include:
+This repository provides Python scripts for the creation, analysis, and manipulation of causal graphs.
 
-Building a graph from a set of nodes and edges
-Analyzing the graph structure
-Searching for paths within the graph
-Saving and loading a graph from a file
-Visualizing the graph using the networkx library
-Files
-causal.py
-This script contains the definition of the CausalGraph class, and a set of related utility functions.
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Files](#files)
+  - [causal.py](#causalpy)
+- [Dependencies](#dependencies)
+- [License](#license)
+
+## Installation
+
+Clone the repository to your local machine:
+
+```bash
+git clone https://github.com/<your-github-username>/causal-graph-analysis.git
 
 Class: CausalGraph
 This class represents a causal graph. It takes as input a set of nodes, a set of directed edges (representing causal relationships), and a set of undirected edges (representing unobserved relationships).
