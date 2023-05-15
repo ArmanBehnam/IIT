@@ -8,6 +8,8 @@ This repository provides Python scripts for the creation, analysis, and manipula
 - [Usage](#usage)
 - [Files](#files)
   - [causal.py](#causalpy)
+  - [mlp.py](#mlppy)
+  - [ncm.py](#ncmpy)
 
 # causal.py
 
@@ -50,3 +52,43 @@ The `graph_search` function uses Breadth-First Search (BFS) to find a path betwe
 
 - If `v2` is not None, the function returns a boolean indicating whether a path (observed or unobserved) exists between `v1` and `v2`.
 - If `v2` is None, the function returns a set of all nodes reachable from `v1`.
+
+# mlp.py
+
+`mlp.py` implements the `MLP` class, a Multi-Layer Perceptron model in PyTorch, along with various distribution classes.
+
+## MLP Class
+
+The `MLP` class is a Multi-Layer Perceptron model that uses linear layers, optional layer normalization, and ReLU activation.
+
+### Attributes
+
+- `cg`: A `CausalGraph` object.
+- `i_size`: Size of input.
+- `u_size`: Size of exogenous variables.
+- `o_size`: Size of output (default is 1).
+- `h_size`: Size of hidden layers.
+- `h_layers`: Number of hidden layers.
+- `use_layer_norm`: A boolean indicating whether to use layer normalization.
+- `nn`: The neural network defined as a `nn.Sequential` object.
+
+### Methods
+
+- `__init__(self, cg, i_size, u_size, o_size=1, h_size=128, h_layers=2, use_layer_norm=False)`: Initializes an `MLP` object.
+- `init_weights(self, m)`: Initializes the weights of the model.
+- `forward(self, fn, u,include_inp=False)`: Performs forward pass of the model.
+
+## Distribution Class
+
+The `Distribution` class is a base class for different types of distributions.
+
+### Attributes
+
+- `u`: A list of variables in the distribution.
+
+### Methods
+
+- `__init__(self, u)`: Initializes a `Distribution` object.
+- `__iter__(self)`: Returns an iterator over the variables.
+- `sample(self, n=1, device='cpu')`: Samples from the distribution (not implemented in base class).
+
