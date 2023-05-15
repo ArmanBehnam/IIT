@@ -92,3 +92,53 @@ The `Distribution` class is a base class for different types of distributions.
 - `__iter__(self)`: Returns an iterator over the variables.
 - `sample(self, n=1, device='cpu')`: Samples from the distribution (not implemented in base class).
 
+# NCM File
+
+`ncm.py` provides the implementation of `SCM` (Structural Causal Model) and `NCM` (Neural Causal Model) classes.
+
+## SCM Class
+
+The `SCM` class represents a structural causal model, where each variable is a function of its parents in a causal graph and an independent noise term.
+
+### Attributes
+
+- `target_node`: The target node in the causal graph.
+- `fn`: First hop neighborhood.
+- `sn`: Second hop neighborhood.
+- `on`: Out of hop neighborhood.
+- `f`: Function.
+- `u`: Exogenous variables.
+- `v`: Endogenous variables.
+
+### Methods
+
+- `__init__(self, target_node, fn, sn, on)`: Initializes an `SCM` object.
+- `size(self)`: Returns the size of each neighborhood and the total size.
+- `space(self, i_size, select=None, tensor=True)`: Generates all possible states in the space.
+- `intervention_fn(self)`: A random intervention function that adds a random value to `v` and `u`.
+- `sample(self, n=None, u=None, do={}, select=None)`: Generates a sample from the SCM.
+- `convert_evaluation(self, samples)`: Converts the samples.
+- `forward(self, n=None, u=None, do={}, select=None, evaluating=False)`: Performs a forward pass through the SCM.
+- `query_loss(self, input, val)`: Calculates the loss for a query.
+
+## NCM Class
+
+The `NCM` class is an extension of the `SCM` class and represents a Neural Causal Model.
+
+### Attributes
+
+- `cg`: A CausalGraph object.
+- `u_size`: Size of the exogenous variables.
+- `v_size`: Size of the endogenous variables.
+- `f`: Function.
+- `pu`: UniformDistribution object.
+
+### Methods
+
+- `__init__(self, cg, v_size={}, default_v_size=1, u_size={}, default_u_size=1, f={}, default_module=MLP)`: Initializes an `NCM` object.
+- `biased_nll(self, v, n=1, do={})`: Computes the biased negative log likelihood.
+- `nll(self, v, n=1, do={}, m=100000, alpha=80, return_biased=False)`: Computes the negative log likelihood.
+- `nll_marg(self, v, n=1, m=10000, do={}, return_biased=False)`: Computes the marginal negative log likelihood.
+
+
+
