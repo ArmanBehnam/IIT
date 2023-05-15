@@ -1,6 +1,6 @@
-# Causal Graph Analysis
+# Causal Graph Explainer
 
-This repository provides Python scripts for the creation, analysis, and manipulation of causal graphs.
+This repository provides Python scripts for the creation, analysis, and manipulation of causal graphs for using NCM models for explaining GNNs
 
 ## Table of Contents
 
