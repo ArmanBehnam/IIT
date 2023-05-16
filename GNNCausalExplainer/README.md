@@ -1,6 +1,6 @@
 # Causal Graph Explainer
 
-This repository provides Python scripts for the creation, analysis, and manipulation of causal graphs for using NCM models for explaining GNNs
+  Explaining neural networks helps to interpret the information within the network. Graph Neural Networks (GNNs) are a great architecture to study the neural networks explanation. In this work, we proposed the GNNCausalExplainer, a novel approach for GNN graph-level explanation by causality. Until now, all the neural networks' explanation have been based on association, but in this paper we get the information out of the dataset by calculation of expressivity of Neural Causal models (NCMs). We used intervention for making a model on NCM data structure instead of labels. The input of our framework is the dataset and the output is the explanatory subgraph $\Gamma$-GNN, it's causal model, and the information provided by this subgraph. Our approach contains three main steps: 1) Identifying neural causal identities, 2) the neural model estimation, and 3) explain the subgraph based on the model and evaluate that by it's expressivity. According to the experiments on synthetic and real-world graphs, our approach works well for neural identification of expressiveness and explaining graphs based on causal inference of that graph.
 
 ## Table of Contents
 
