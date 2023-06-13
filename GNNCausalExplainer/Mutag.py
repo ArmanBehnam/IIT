@@ -1,14 +1,9 @@
 from itertools import product
 import pandas as pd
+from itertools import product
+import pandas as pd
 
 Mutagenicity = "/content/drive/MyDrive/data/Mutagenicity/"
-from itertools import product
-from alg3 import *
-import causal
-import pandas as pd
-from causal import *
-
-Mutagenicity = "D:/University/Spring2023/Research/Session23-230614/Codes/My/data/Mutagenicity/"
 # Load the data
 Mutagenicity_df = pd.read_csv(Mutagenicity + 'Mutagenicity_A.txt', sep=',', header=None, names=['from', 'to'])
 Mutagenicity_graph_indicator = pd.read_csv(Mutagenicity + 'Mutagenicity_graph_indicator.txt', header=None, names=['graph_id'])
