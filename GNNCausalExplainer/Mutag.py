@@ -27,7 +27,7 @@ for graph_id, group in grouped:
     # Create a list of edges for each group
     edges = list(zip(group['from'], group['to'])) + list(zip(group['to'], group['from']))
     # Create a CausalGraph for each group
-    Mutagenicity_causal_graphs[graph_id] = causal.CausalGraph(V=V, path=edges)
+    Mutagenicity_causal_graphs[graph_id] = CausalGraph(V=V, path=edges)
     # Mutagenicity_causal_graphs[graph_id].plot()
 
 cg = Mutagenicity_causal_graphs[1.0]
@@ -51,7 +51,7 @@ best_hyperparams = None
 for i, hyperparams in enumerate(hyperparameters):
     learning_rate, h_size, h_layers, lambdas = hyperparams
     print(f'Training with learning rate: {learning_rate}, h_size: {h_size}, h_layers: {h_layers}, lambdas: {lambdas}','\n')
-    causal_loss,best_ncm_model,p_do = alg1.train(cg, lambdas, learning_rate, h_size, h_layers, num_epochs)
+    causal_loss,best_ncm_model,p_do = train(cg, lambdas, learning_rate, h_size, h_layers, num_epochs)
     total_loss.append(causal_loss)
     if causal_loss < min_loss:
         best_model = best_ncm_model
