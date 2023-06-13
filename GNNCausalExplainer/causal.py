@@ -1,8 +1,8 @@
-import re
-import itertools
 from collections import deque
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
+import numpy as np
 
 class CausalGraph:
     def __init__(self, V, path=[], unobserved_edges=[]):
@@ -11,7 +11,6 @@ class CausalGraph:
         self.fn = {v: set() for v in V}  # First neighborhood
         self.sn = {v: set() for v in V}  # Second neighborhood
         self.on = {v: set() for v in V}  # Out of neighborhood
-
         self.p = set(map(tuple, map(sorted, path)))  # Path to First neighborhood
         self.ue = set(map(tuple, map(sorted, unobserved_edges)))  # Unobserved edges
 
@@ -20,103 +19,12 @@ class CausalGraph:
             self.fn[v2].add(v1)
             self.p.add(tuple(sorted((v1, v2))))
 
-        self.categorize_neighbors()
-
-        self._sort()
-        self.v2i = {v: i for i, v in enumerate(self.v)}
-
-        self.cc = self._c_components()
-        self.v2cc = {v: next(c for c in self.cc if v in c) for v in self.v}
-        self.pap = {
-            v: sorted(set(itertools.chain.from_iterable(
-                list(self.fn[v2]) + [v2]
-                for v2 in self.v2cc[v]
-                if self.v2i[v2] <= self.v2i[v])) - {v},
-                      key=self.v2i.get)
-            for v in self.v}
-        self.c2 = self._maximal_cliques()
-        self.v2c2 = {v: [c for c in self.c2 if v in c] for v in self.v}
-
     def __iter__(self):
         return iter(self.v)
 
-    def subgraph(self, V_sub, V_cut_back=None, V_cut_front=None):
-        assert V_sub.issubset(self.set_v)
-
-        if V_cut_back is None:
-            V_cut_back = set()
-        if V_cut_front is None:
-            V_cut_front = set()
-
-        assert V_cut_back.issubset(self.set_v)
-        assert V_cut_front.issubset(self.set_v)
-
-        new_p = [(V1, V2) for V1, V2 in self.p
-                  if V1 in V_sub and V2 in V_sub and V2 not in V_cut_back and V1 not in V_cut_front]
-        new_ue = [(V1, V2) for V1, V2 in self.ue
-                  if V1 in V_sub and V2 in V_sub and V1 not in V_cut_back and V2 not in V_cut_back]
-
-        return CausalGraph(V_sub, new_p, new_ue)
-
-    def _sort(self):
-        # Topological sorting using DFS
-        L = []
-        marks = {v: 0 for v in self.v}  # 0: unmarked, 1: temporary, 2: permanent
-
-    def _c_components(self):
-        pool = set(self.v)
-        cc = []
-        while pool:
-            cc.append({pool.pop()})
-            while True:
-                added = {k2 for k in cc[-1] for k2 in self.sn[k]}
-                delta = added - cc[-1]
-                cc[-1].update(delta)
-                pool.difference_update(delta)
-                if not delta:
-                    break
-        return [tuple(sorted(c, key=self.v2i.get)) for c in cc]
-
-    def _maximal_cliques(self):
-        # find degeneracy ordering
-        o = []
-        p = set(self.v)
-        while len(o) < len(self.v):
-            v = min((len(set(self.sn[v]).difference(o)), v) for v in p)[1]
-            o.append(v)
-            p.remove(v)
-
-        # brute-force bron_kerbosch algorithm
-        c2 = set()
-
-        def bron_kerbosch(r, p, x):
-            if not p and not x:
-                c2.add(tuple(sorted(r)))
-            p = set(p)
-            x = set(x)
-            for v in list(p):
-                bron_kerbosch(r.union({v}),
-                              p.intersection(self.sn[v]),
-                              x.intersection(self.sn[v]))
-                p.remove(v)
-                x.add(v)
-
-        # apply brute-force bron_kerbosch with degeneracy ordering
-        p = set(self.v)
-        x = set()
-        for v in o:
-            bron_kerbosch({v},
-                          p.intersection(self.sn[v]),
-                          x.intersection(self.sn[v]))
-            p.remove(v)
-            x.add(v)
-
-        return c2
-
-    def categorize_neighbors(self):
-        centrality = {v: len(self.fn[v]) for v in self.v}
-        target_node = max(centrality, key=centrality.get)
-
+    def categorize_neighbors(self,target_node):
+        # centrality = {v: len(self.fn[v]) for v in self.v}
+        # target_node = max(centrality, key=centrality.get)
         if target_node not in self.set_v:
             return
 
@@ -140,118 +48,118 @@ class CausalGraph:
         G.add_edges_from(self.p)
 
         pos = nx.spring_layout(G)
-        nx.draw(G, pos, with_labels=True, node_size=2000, font_size=20, font_weight='bold', node_color="lightblue", edge_color="grey")
-        plt.savefig('d_causal.png')
+        nx.draw(G, pos, with_labels=True, node_size=200, font_size=10, font_weight='bold', node_color="lightblue", edge_color="grey")
+        plt.savefig('causal.png')
+        plt.show()
 
-    def convert_set_to_sorted(self, C):
-        return [v for v in self.v if v in C]
+    def sort(self):
+        sorted_nodes = sorted(list(self.set_v))
+        return sorted_nodes
 
-    def serialize(self, C):
-        return tuple(self.convert_set_to_sorted(C))
+    def graph_search(self,cg, v1, v2=None, edge_type="path",target_node = None):
+        assert edge_type in ["path", "unobserved"]
+        assert v1 in cg.set_v
+        assert v2 in cg.set_v or v2 is None
 
-    @classmethod
-    def read(cls, filename):
-        with open(filename) as file:
-            mode = None
-            V = []
-            directed_edges = []
-            bidirected_edges = []
-            try:
-                for i, line in enumerate(map(str.strip, file), 1):
-                    if line == '':
-                        continue
+        target, one_hop_neighbors, two_hop_neighbors, out_of_neighborhood = cg.categorize_neighbors(target_node)
 
-                    m = re.match('<([A-Z]+)>', line)
-                    if m:
-                        mode = m.groups()[0]
-                        continue
+        q = deque([v1])
+        seen = {v1}
+        while len(q) > 0:
+            cur = q.popleft()
+            cur_fn = cg.fn[cur]
+            cur_sn = cg.sn[target_node]
+            cur_on = cg.on[target_node]
 
-                    if mode == 'NODES':
-                        if line.isidentifier():
-                            V.append(line)
-                        else:
-                            raise ValueError('invalid identifier')
-                    elif mode == 'EDGES':
-                        if '<->' in line:
-                            v1, v2 = map(str.strip, line.split('<->'))
-                            bidirected_edges.append((v1, v2))
-                        elif '->' in line:
-                            v1, v2 = map(str.strip, line.split('->'))
-                            directed_edges.append((v1, v2))
-                        else:
-                            raise ValueError('invalid edge type')
-                    else:
-                        raise ValueError('unknown mode')
-            except Exception as e:
-                raise ValueError(f'Error parsing line {i}: {e}: {line}')
-            return cls(V, directed_edges, bidirected_edges)
+            cur_neighbors = cur_fn if edge_type == "path" else (cur_sn | cur_on)
 
-    def save(self, filename):
-        with open(filename, 'w') as file:
-            lines = ["<NODES>\n"]
-            for V in self.v:
-                lines.append("{}\n".format(V))
-            lines.append("\n")
-            lines.append("<EDGES>\n")
-            for V1, V2 in self.de:
-                lines.append("{} -> {}\n".format(V1, V2))
-            for V1, V2 in self.be:
-                lines.append("{} <-> {}\n".format(V1, V2))
-            file.writelines(lines)
+            for neighbor in cur_neighbors:
+                if neighbor not in seen:
+                    if v2 is not None:
+                        if (neighbor == v2 and edge_type == "path" and neighbor in one_hop_neighbors) or \
+                                (neighbor == v2 and edge_type == "unobserved" and neighbor in (
+                                        two_hop_neighbors | out_of_neighborhood)):
+                            return True
+                    seen.add(neighbor)
+                    q.append(neighbor)
 
+        if v2 is None:
+            return seen
 
-def graph_search(cg, v1, v2=None, edge_type="path"):
-    """
-    Uses BFS to check for a path between v1 and v2 in cg. If v2 is None, returns all reachable nodes.
-    """
-    assert edge_type in ["path", "unobserved"]
-    assert v1 in cg.set_v
-    assert v2 in cg.set_v or v2 is None
+        return False
 
-    target_node, one_hop_neighbors, two_hop_neighbors, out_of_neighborhood = cg.categorize_neighbors()
+    def generate_binary_values(self, cg, num_samples):
+        dataset = []
+        for _ in range(num_samples):
+            binary_values = {node: random.choice([0, 1]) for node in cg}
+            dataset.append(binary_values)
+        return dataset
 
-    q = deque([v1])
-    seen = {v1}
-    while len(q) > 0:
-        cur = q.popleft()
-        cur_fn = cg.fn[cur]
-        cur_sn = cg.sn[target_node]
-        cur_on = cg.on[target_node]
+    def calculate_probabilities(self, dataset):
+        node_counts = {node: 0 for node in self.v}
+        total_samples = len(dataset)
 
-        cur_neighbors = cur_fn if edge_type == "path" else (cur_sn | cur_on)
+        for i in dataset:
+            for node, value in i.items():
+                if value == 1:
+                    node_counts[node] += 1
 
-        for neighbor in cur_neighbors:
-            if neighbor not in seen:
-                if v2 is not None:
-                    if (neighbor == v2 and edge_type == "path" and neighbor in one_hop_neighbors) or \
-                            (neighbor == v2 and edge_type == "unobserved" and neighbor in (
-                                    two_hop_neighbors | out_of_neighborhood)):
-                        return True
-                seen.add(neighbor)
-                q.append(neighbor)
+        node_probabilities = {node: count / total_samples for node, count in node_counts.items()}
+        return node_probabilities
 
-    if v2 is None:
-        return seen
+    def calculate_joint_probabilities(self, dataset):
+        joint_counts = {(node_i, node_j): 0 for node_i in self.v for node_j in self.v if node_i != node_j}
+        total_samples = len(dataset)
 
-    return False
+        for sample in dataset:
+            for node_i, node_j in joint_counts.keys():
+                if sample[node_i] == 1 and sample[node_j] == 1:
+                    joint_counts[(node_i, node_j)] += 1
+
+        joint_probabilities = {}
+        min_prob = 1  # initialize the min_prob to 1
+
+        # First, calculate the probabilities for the existing links
+        for (node_i, node_j), count in joint_counts.items():
+            if (node_i, node_j) in self.p or (node_j, node_i) in self.p:
+                prob = count / total_samples
+                joint_probabilities[(node_i, node_j)] = prob
+                joint_probabilities[(node_j, node_i)] = prob  # update for bidirectional link
+                if prob < min_prob:
+                    min_prob = prob  # update the minimum probability
+
+        # Now, calculate the probabilities for the non-existing links using the Gumbel distribution
+        for (node_i, node_j), count in joint_counts.items():
+            if (node_i, node_j) not in self.p and (node_j, node_i) not in self.p:
+                # generate a random value from a Gumbel distribution
+                gumbel_noise = np.random.gumbel()
+                # rescale the gumbel noise to be in [0, min_prob)
+                # scaled_gumbel_noise = min_prob * (gumbel_noise - np.min(gumbel_noise)) / (np.max(gumbel_noise) - np.min(gumbel_noise))
+                joint_probabilities[(node_i, node_j)] = gumbel_noise
+                joint_probabilities[(node_j, node_i)] = gumbel_noise  # update for bidirectional link
+
+        return joint_probabilities
 
 if __name__ == "__main__":
     cg = CausalGraph(['A', 'B', 'C', 'D'], [('A', 'B'), ('A', 'C'), ('B', 'D')])
-    # cg = "My/cg/backdoor.cg"
-    # Categorize neighbors for node A
-    target_node, one_hop_neighbors, two_hop_neighbors, out_of_neighborhood = cg.categorize_neighbors()
+    datasets = cg.generate_binary_values(cg,num_samples=10)
+    p_v = cg.calculate_probabilities(datasets)
+    print(datasets)
+    p_v_joint = cg.calculate_joint_probabilities(datasets)
+    print(p_v)
+    print(p_v_joint)
+    print(cg.p)
 
+    target_node, one_hop_neighbors, two_hop_neighbors, out_of_neighborhood = cg.categorize_neighbors(target_node = cg.sort()[0])
     print(f"Target node: {target_node}")
     print(f"1-hop neighbors of A: {one_hop_neighbors}")
     print(f"2-hop neighbors of A: {two_hop_neighbors}")
     print(f"Out of neighborhood of A: {out_of_neighborhood}")
     # Example usage of graph_search
-    result1 = graph_search(cg, 'A', 'D', edge_type="path")
+    result1 = cg.graph_search(cg, 'A', 'D', edge_type="path",target_node = 'A')
     print(f"Is there a path from A to D? {result1}")
-
-    result2 = graph_search(cg, 'A', 'D', edge_type="unobserved")
+    result2 = cg.graph_search(cg, 'A', 'D', edge_type="unobserved",target_node = 'A')
     print(f"Can there be an unobserved path from A to D? {result2}")
-
-    result3 = graph_search(cg, 'A', edge_type="path")
+    result3 = cg.graph_search(cg, 'A', edge_type="path",target_node = 'A')
     print(f"All nodes reachable from A via paths: {result3}")
     cg.plot()
