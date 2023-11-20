@@ -29,7 +29,7 @@ Execution
 To run the program, use the following command:
 
 
-Copy code
+'''bash
 ./employeeDB input.txt
 Replace input.txt with the path to your input file containing the initial employee data.
 
