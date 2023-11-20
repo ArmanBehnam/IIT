@@ -36,19 +36,22 @@ Replace input.txt with the path to your input file containing the initial employ
 Usage
 After running the program, you will be presented with a menu of options:
 
-Print the Database
-Lookup by ID
-Lookup by Last Name
-Add an Employee
-Quit
-Remove an employee
-Update an employee's information
-Print the M employees with the highest salaries
-Find all employees with matching last name
-Select an option by entering the corresponding number.
+
+1. Print the Database
+2. Lookup by ID
+3. Lookup by Last Name
+4. Add an Employee
+5. Quit
+6. Remove an employee
+7. Update an employee's information
+8. Print the M employees with the highest salaries
+9. Find all employees with matching last name
+10. Select an option by entering the corresponding number.
+
 
 Input File Format
 The input file should contain employee data in the following format:
+
 
 Copy code
 ID FirstName LastName Salary
@@ -81,6 +84,7 @@ Updates the details of an existing employee.
 
 findAllWithLastName
 Finds all employees with a given last name.
+
 
 Contributors
 [Arman Behnam]
