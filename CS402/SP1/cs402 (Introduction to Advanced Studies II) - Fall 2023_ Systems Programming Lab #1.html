@@ -1,0 +1,323 @@
+
+<!-- saved from url=(0068)http://cs.iit.edu/~virgil/cs402/mail.fall2023/Labs/C/lab-1/lab1.html -->
+<html version="4.0"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>cs402 (Introduction to Advanced Studies II) - Fall 2023: Systems Programming Lab #1</title>
+  <link href="./cs402 (Introduction to Advanced Studies II) - Fall 2023_ Systems Programming Lab #1_files/main.css" media="screen" rel="stylesheet" type="text/css">
+  
+  <meta name="description" content="cs402 - Introduction to Advanced Studies II lab assignment">
+  <meta name="keywords" content="computer architecture, systems programming">
+  <meta name="author" content="Virgil Bistriceanu">
+  <meta name="copyright" content="Virgil Bistriceanu, 2023">
+  <meta name="robots" content="index,follow,archive">
+<link rel="stylesheet" type="text/css" href="./cs402 (Introduction to Advanced Studies II) - Fall 2023_ Systems Programming Lab #1_files/desert.css"></head>
+
+<body bgcolor="#ffffff" data-new-gr-c-s-check-loaded="14.1139.0" data-gr-ext-installed="">
+  
+<center>
+<table width="768" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr>
+<td>
+<center>
+  <h1>cs402 - Fall 2023</h1>
+  <h2>Systems Programming Lab #1 - C Programming Basics</h2>
+</center>
+<hr>
+<h2>1. Goal</h2>
+<ul>
+  <li>
+    Practice with C programming basics: declaring variables, types, arrays, and functions.
+  </li>
+  <li>
+    Writing C code and functions that uses statically declared arrays and structs and arrays of structs.
+  </li>
+  <li>
+    Practice writing and using C functions.  Pass by value: basic types and array parameters.
+  </li>
+  <li>
+    C I/O: scanf, printf, and building a simplified file reading library.
+  </li>
+  <li>More practice with top-down design.</li>
+</ul>
+
+<h2>2. Lab Description</h2>
+
+<p>
+  For this lab, you will implement an employee database program in C.  Your
+  program will store employee information in an array of employee structs, sorted
+  by employee ID value.  Your program will read in employee data from an input
+  file when it starts-up.
+</p>
+
+<p>
+  Your program should print out a menu of transaction options, read in the
+  user's selection, perform the chosen operation on the employee database, and
+  repeat until told to quit.  The options your program must support are the
+  following (<b>Do not change the numbering of these menu options in your program
+  (i.e. menu option 2 must be look up by ID, option 5 must be quit, etc.)</b>):
+</p>
+<ol>
+  <li> Print the Database</li>
+  <li> Lookup employee by ID</li>
+  <li> Lookup employee by last name</li>
+  <li> Add an Employee</li>
+  <li> Quit</li>
+</ol>
+
+<p>
+  Your program should continue handling the user's transaction choices until the
+  user enters 5, the "QUIT" option.
+</p>
+
+<h3>2.1 Program Start-up</h3>
+
+<p>
+  Your program will take one command line argument, which is the name of the
+  input file containing employee information. For example, telling your program
+  to load the employee data stored in the file "small.txt" would look like:
+</p>
+<pre class="prettyprint prettyprinted" style=""><span class="pln">
+</span><span class="pun">./</span><span class="pln">workerDB small</span><span class="pun">.</span><span class="pln">txt
+
+</span></pre>
+
+<h4>File Format</h4>
+
+<p>
+  The input file format consists of several lines of ASCII text.  Each line
+  contains the information for one employee in the following order:
+</p>
+<pre>six_digit_ID  first_name  last_name  salary
+</pre>
+<p>
+  For example, here is a file with 4 employees:
+</p>
+<pre>273836 Edsger Dijkstra 93000
+493570 Leslie Lamport 63000
+518364 Vint Cerf 85000
+998447 Barbara Liskov 75000
+</pre>
+
+<h3>2.2 File I/O</h3>
+
+<p>
+  For this assignment you will develop a small library that includes functions
+  you'll be using later in the assignment to simplify reading data from the
+  input file.  Name you library files readfile.c and readfile.h
+</p>
+<p>
+  Here are the functiones that you'll include in the library:
+</p>
+<ul>
+  <li> Open a file by calling: <tt>open_file()</tt>, passing in the name of the
+    file to open as a string; open_file() returns 0 if the file is successfully
+    opened, and -1 if the file cannot be opened.
+  </li>
+  <li>
+    Functions to read values of different types into program variables:
+    <tt>read_int()</tt>, <tt>read_string()</tt>, <tt>read_float()</tt>.
+    These functions take arguments much like scanf does: they need to know
+    the memory location of where to put the value read in.  For example:
+
+    <pre class="prettyprint prettyprinted" style=""><span class="pln">
+      </span><span class="kwd">int</span><span class="pln"> x</span><span class="pun">;</span><span class="pln">
+      </span><span class="kwd">float</span><span class="pln"> f</span><span class="pun">;</span><span class="pln">
+      </span><span class="kwd">char</span><span class="pln"> s</span><span class="pun">[</span><span class="lit">20</span><span class="pun">];</span><span class="pln">
+      </span><span class="pun">...</span><span class="pln">
+      ret </span><span class="pun">=</span><span class="pln"> </span><b><span class="pln">read_float</span></b><span class="pun">(&amp;</span><span class="pln">f</span><span class="pun">);</span><span class="pln">  </span><span class="com">/* returns 0 on success, -1 on EOF */</span><span class="pln">
+      ret </span><span class="pun">=</span><span class="pln"> </span><b><span class="pln">read_int</span></b><span class="pun">(&amp;</span><span class="pln">x</span><span class="pun">)</span><span class="pln">     </span><span class="com">/* returns 0 on success, -1 on EOF */</span><span class="pln">
+      ret </span><span class="pun">=</span><span class="pln"> </span><b><span class="pln">read_string</span></b><span class="pun">(</span><span class="pln">s</span><span class="pun">)</span><span class="pln">       </span><span class="com">/* returns 0 on success, -1 on EOF */</span><span class="pln">
+
+
+    </span></pre>
+  </li>
+  <li> Close the file when you are done with it: <tt>close_file()</tt></li>
+</ul>
+
+<h3>2.3 Storing Employee Records</h3>
+
+<p>
+  You should define an employee struct with the fields necessary to store
+  information for one employee.  Think about which types you want to use for the
+  different fields, and use meaningful field names.  Because the DB supports a
+  look-up operation by last name, I suggest storing first and last name values in
+  two separate fields rather than using a single name field.  You may assume that
+  no first nor last name is longer than 64 characters, including the trailing
+  '\0' character.
+</p>
+<p>
+  Here is an example of how you might define a person struct to store a single
+  name and age value for each person:
+</p>
+<pre class="prettyprint prettyprinted" style=""><span class="pln">
+  </span><span class="com">#define</span><span class="pln"> MAXNAME  </span><span class="lit">64</span><span class="pln">     </span><span class="com">/* #define and use constants for values that don't change */</span><span class="pln">
+
+  </span><span class="kwd">struct</span><span class="pln"> person </span><span class="pun">{</span><span class="pln">
+     </span><span class="kwd">char</span><span class="pln"> name</span><span class="pun">[</span><span class="pln">MAXNAME</span><span class="pun">];</span><span class="pln">   </span><span class="com">/* a C-style string (array of chars) */</span><span class="pln">
+     </span><span class="kwd">int</span><span class="pln">  age</span><span class="pun">;</span><span class="pln">
+  </span><span class="pun">};</span><span class="pln">
+
+</span></pre>
+
+<p>
+  Use the following information about valid field values to help you decide
+  which type to use for individual fields (for some fields there may be more
+  than one reasonable choice):
+</p>
+
+<ul>
+  <li>The six digit ID value must be between 100000 and 999999 inclusive.</li>
+  <li>Salary amounts must be between $30,000 and $150,000 inclusive.</li>
+  <li>The salary is a positive whole number amount (no decimals).</li>
+  <li>
+    You should assume that every employee has exactly two names (a first and a
+    last), so "John D. Rockefeller" is not a valid name for purposes of this
+    assignment.
+  </li>
+</ul>
+
+<p>
+  The employee data read in from the file should be stored in an array of
+  employee structs.  You may assume that there are never more than 1024 employees.
+</p>
+
+<h2>3. Requirements</h2>
+<p>
+  Your output should look like
+  <a href="http://cs.iit.edu/~virgil/cs402/mail.fall2023/Labs/C/lab-1/lab01_sample_output.html">this sample output</a>
+  (it doesn't have to be an exact match, but it should have a similarly
+  formatted structure). This output was obtained by processing
+  <a href="http://cs.iit.edu/~virgil/cs402/mail.fall2023/Labs/C/lab-1/input.txt">this file</a>. NOTE: employees should be listed
+  in increasing ID order.
+</p>
+<p>
+  For full credit, your submission should meet the following requirements:
+</p>
+<ul>
+  <li>When asked by the user to print the database, you should do so in a
+    tabular format followed by printing out the total number of employees in the
+    database.
+    See the <a href="http://cs.iit.edu/~virgil/cs402/mail.fall2023/Labs/C/lab-1/lab01_sample_output.html">sample output</a> for an example.
+    Your output does not need to be identical to mine, but it should have a
+    similar tabular form.
+  </li>
+  <li>
+    When asked by the user to look up an employee by ID, you should use
+    LINEAR SEARCH to find a matching employee in the data base.  If one is found,
+    print out the Employee information.  If not, print out a "not found" message
+    to the user.  NOTE: you have to write your own function,  do not use an
+    external library.
+  </li>
+  <li>
+    When asked by the user to look up an employee by last name, you may
+    search the database however you like.  If no there are no matching employees,
+    print out a "not found" message.  If there is more than one employee with a
+    matching last name, it's sufficient to print the information for only one of
+    them (you don't need to find all matches, just one).
+  </li>
+  <li>
+    When asked by the user to add an employee to the database, your program
+    should prompt them for the employee's information.  It should also ensure
+    that the user enters valid values for each field, and print out an error
+    message and re-prompt the user to try again, repeating until the user enters
+    valid values. It should then print out the field values of the employee to add,
+    and ask the user if s/he really wants to add the employee.  If yes, insert
+    the new employee in the array.  You must make sure that any employee entered by
+    the user will be assigned an ID that is numerically larger than any existing
+    employee record in the database.
+  </li>
+  <li>
+    Your code should be commented, modular, robust, and use meaningful variable
+    and function names. This includes having a top-level comment describing your
+    program and listing your name and the date. In addition, every function
+    should include a brief description of its behavior.
+  </li>
+  <li>
+    It should be evident that you applied top-down design when constructing
+    your submission (e.g., there are multiple functions, each with a specific,
+    documented role).
+  </li>
+</ul>
+
+<h2>4. Tips</h2>
+<ul>
+  <li>
+    Before even starting to write code, use top-down design to break your
+    program into manageable functionality.
+  </li>
+  <li>
+    Test your code in small increments.  It's much easier to localize a bug
+    when you've only changed a few lines.
+  </li>
+  <li>
+    Reading in input from the user (e.g., reading menu selections) should
+    be done using <tt>scanf</tt>.
+  </li>
+  <li>
+    Use <b>CTRL-C</b> to kill a running program stuck in an infinite loop.
+  </li>
+</ul>
+
+<h2>5. Submit your work</h2>
+<p>
+	Here is what you need to deliver on the Blackboard:
+</p>
+<ul>
+  <li>
+    A link to your git repository such that we can clone it, build an
+    executable and test it.
+  </li>
+</ul>
+<p>
+  NOTE: please make sure your repository contains a README file that explains
+  how to build an executable and execute it.
+</p>
+<hr>
+<table width="100%">
+<tbody><tr>
+ <td class="footer-left" width="25%">Last update: Aug 21, 2023</td>
+ <td class="footer-center" width="25%"><a href="http://www.cs.iit.edu/~virgil">Virgil Bistriceanu</a></td>
+ <td class="footer-center" width="25%"><a href="http://www.cs.iit.edu/~virgil/cs402/">cs402</a></td>
+ <td class="footer-right" width="25%"><a href="http://www.iit.edu/csl/cs">Computer Science</a></td>
+</tr>
+</tbody></table>
+<hr>
+</td>
+</tr>
+</tbody></table>
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="./cs402 (Introduction to Advanced Studies II) - Fall 2023_ Systems Programming Lab #1_files/ga.js.download" type="text/javascript"></script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-12597908-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+<!-- End Google Analytics -->
+
+</center>
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>

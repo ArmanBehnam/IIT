@@ -1,0 +1,144 @@
+p {
+	text-align: left;
+	vertical-align: top;
+	font-family: Arial,Helvetica,"Lucida console",sans-serif;
+	font-size: 11pt;
+	background-color: white;
+	color: black
+}
+
+  p.code {
+	margin: 10px 0px 10px 0px;
+	padding: 5px 10px 5px 10px;
+	font-family: "Monaco", "Andale Mono", monospace;
+	font-size:10pt;
+	background-color: #dddddd;
+	color: black;
+  }
+
+  p.version {
+	text-align: left;
+	vertical-align: top;
+	font-family: Arial,Helvetica,"Lucida console",sans-serif;
+	font-size: 6pt;
+	background-color: white; color: black
+  }
+
+h1 { text-align: center; font-family: Arial,Helvetica,"Lucida console",sans-serif; font-size: 16pt; }
+h2 { margin-left: 0em; font-family: Arial,Helvetica,"Lucida console",sans-serif; font-size: 13pt; }
+h3 { margin-left: 0em; font-family: Arial,Helvetica,"Lucida console",sans-serif; font-size: 12pt; }
+h4 { margin-left: 0em; font-family: Arial,Helvetica,"Lucida console",sans-serif; font-size: 10pt; }
+th { text-align: center; font-family: Arial; font-size: 11pt; background-color: black; color: white }
+td { text-align: left; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif; font-size: 11pt;
+     background-color: white; color: black
+   }
+
+  td.center { text-align: center; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+              font-size: 11pt; background-color: white; color: black
+	    }
+  td.right  { text-align: right; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+              font-size: 11pt; background-color: white; color: black
+	    }
+  td.links { text-align: left; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+             font-size: 9pt; background-color: white; color: black
+	   }
+  td.footer-left   { text-align: left; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+                     font-size: 8pt; background-color: white; color: black
+		   }
+  td.footer-center { text-align: center; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+                     font-size: 8pt; background-color: white; color: black
+		   }
+  td.footer-right  { text-align: right; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+                     font-size: 8pt; background-color: white; color: black
+		   }
+  td.bgBlack { text-align: left; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+               font-size: 9pt; background-color: black; color: white
+	     }
+  td.bgGreen { text-align: left; vertical-align: top;  font-family: Arial,Helvetica,"Lucida console",sans-serif;
+               font-size: 11pt; background-color: green; color: white
+	     }
+
+pre {
+	text-align: left;
+	vertical-align: top;
+	font-family: "Monaco", "Andale Mono", monospace;
+	font-size: 10pt;
+	background-color: white; color: black
+}
+
+blockquote {
+             margin: 10px 0px 10px 0px;
+             padding: 5px 10px 5px 10px;
+             border-left: 4px solid;
+             border-color: #109CEF;
+           }
+
+#content {
+		  width: 768px;
+		  margin-left: auto;
+		  margin-right: auto;
+		  border: 1px solid;
+		  border-color: #000000;
+}
+
+div.box {
+	padding:10px;
+	border:2px dotted gray;
+	margin:0px;
+}
+
+span.code {
+	font-family: "Monaco", "Andale Mono", monospace;
+	font-size:10pt;
+	background-color: gainsboro;
+}
+
+span.highlight {
+	background-color: GreenYellow;
+}
+
+hr {
+	border: 0;
+	border-bottom: 1px solid #ccc;
+	background: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.thumbnail {
+  max-width: 40%;
+}
+
+/** LIGHTBOX MARKUP **/
+
+.lightbox {
+	/** Default lightbox to hidden */
+	display: none;
+
+	/** Position and style */
+	position: fixed;
+	z-index: 999;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	top: 0;
+	left: 0;
+	background: rgba(0,0,0,0.8);
+}
+
+.lightbox img {
+	/** Pad the lightbox image */
+	max-width: 90%;
+	max-height: 80%;
+	margin-top: 2%;
+}
+
+.lightbox:target {
+	/** Remove default browser outline */
+	outline: none;
+
+	/** Unhide lightbox **/
+	display: block;
+}
