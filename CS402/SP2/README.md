@@ -22,13 +22,13 @@ This program is an employee database management system developed in C. It allows
 ### Compilation
 To compile the program, navigate to the source directory and run the following command:
 
-```bash
+
 gcc main.c readfile.c -o employeeDB
-'''
+
 Execution
 To run the program, use the following command:
 
-bash
+
 Copy code
 ./employeeDB input.txt
 Replace input.txt with the path to your input file containing the initial employee data.
