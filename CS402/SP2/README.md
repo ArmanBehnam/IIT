@@ -30,10 +30,10 @@ To run the program, use the following command:
 
 
 ./employeeDB input.txt
-Replace input.txt with the path to your input file containing the initial employee data.
+- Replace input.txt with the path to your input file containing the initial employee data.
 
-Usage
-After running the program, you will be presented with a menu of options:
+## Usage
+- After running the program, you will be presented with a menu of options:
 
 
 1. Print the Database
@@ -48,15 +48,14 @@ After running the program, you will be presented with a menu of options:
 10. Select an option by entering the corresponding number.
 
 
-Input File Format
-The input file should contain employee data in the following format:
+## Input File Format
+- The input file should contain employee data in the following format:
 
-
-Copy code
+'''php
 ID FirstName LastName Salary
-Each field should be separated by a space, and each employee should be on a new line.
+- Each field should be separated by a space, and each employee should be on a new line.
 
-Functions
+## Functions
 loadEmployees
 Loads employee data from the specified file.
 
@@ -85,7 +84,7 @@ findAllWithLastName
 Finds all employees with a given last name.
 
 
-Contributors
+## Contributors
 [Arman Behnam]
 License
 You can save this as `README.md` in your project directory. Markdown (.md) is a lightweight markup language with plain-text formatting syntax that is widely used for documentation, especially in projects hosted on platforms like GitHub. Adjust the content as needed to match your project's specifics, such as detailed descriptions of functions, additional setup instructions, or any dependencies.
