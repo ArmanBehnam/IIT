@@ -13,15 +13,12 @@ This program is an employee database management system developed in C. It allows
 - Find employees with the highest salaries
 - Search for employees with a specific last name
 
-## Getting Started
-
 ### Prerequisites
 - GCC compiler (or any standard C compiler)
 - Text editor or IDE of your choice
 
 ### Compilation
 To compile the program, navigate to the source directory and run the following command:
-
 
 gcc main.c readfile.c -o employeeDB
 
