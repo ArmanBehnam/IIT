@@ -13,8 +13,8 @@ The BasicStats program is a statistical analysis tool developed in C. It is desi
 - A text editor or Integrated Development Environment (IDE) for editing code.
 
 ## Compilation
-Navigate to the source directory and compile the program using:
-```bash
+- Navigate to the source directory and compile the program using:
+
 gcc -o basicstats main.c -lm
 
 ## Execution
